@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+<link href="{% static 'css/subnetlist.css' %}" rel="stylesheet">
+  <h1>Список подсетей</h1>
+  <form class="search-form" method="GET" action="{% url 'subnet_list' %}">
+    <input class="search-input" type="text" name="search" placeholder="Поиск">
+    <button class="search-button" type="submit">Найти</button>
+  </form>
+  {% if user.is_superuser %}
+  <a class="btn" href="{% url 'subnet_create' %}">Добавить подсеть</a>
+  {% endif %}
+  <table>
+    <thead>
+      <tr>
+        <th>Название</th>
+        <th>IP-адрес</th>
+        <th>Маска подсети</th>
+        {% if user.is_superuser %}
+        <th>Редактирование</th>
+        <th>Удаление</th>
+      {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for subnet in subnets %}
+      <tr>
+        <td><a href="{% url 'ip_address_list' subnet.id %}">{{ subnet.name }}</a></td>
+        <td>{{ subnet.network_address }}</td>
+        <td>{{ subnet.subnet_mask }}</td>
+        {% if user.is_superuser %}
+        <td><a class="btn" href="{% url 'subnet_detail' subnet.id %}">Редактировать</a></td>
+        <form method="post" action="{% url 'subnet_delete' subnet.id %}">
+        {% csrf_token %}
+        {% if user.is_superuser %}
+        <td><button class=btn type="submit" onclick="return confirmDelete()">Удалить</button></td>
+        {% endif %}
+        </form>
+      {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <script>
+    function confirmDelete() {
+      return confirm('Вы уверены, что хотите удалить подсеть?');
+    }
+  </script>
+  {% endblock %}

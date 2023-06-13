@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+<link href="{% static 'css/subnetlist.css' %}" rel="stylesheet">
+  <h1>Список IP-адресов</h1>
+  <form class="filter" method="get">
+    <label for="status-filter">Фильтр по статусу:</label>
+    <select name="status" id="status-filter">
+      <option value="all" {% if status == 'all' %}selected{% endif %}>Все</option>
+      <option value="free" {% if status == 'free' %}selected{% endif %}>Свободные</option>
+      <option value="occupied" {% if status == 'occupied' %}selected{% endif %}>Занятые</option>
+    </select>
+    <button class="filter.btn" type="submit">Применить</button>
+  </form>
+  <table>
+    <thead>
+      <tr>
+        <th>Название подсети</th>
+        <th>IP-адрес</th>
+        <th>Статус</th>
+        <th>Организация</th>
+        <th>Адрес организации</th>
+        <th>Редактирование</th>
+        {% if user.is_superuser %}
+        <th>Удаление</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for ip_address in ip_addresses %}
+      <tr>
+        <td>{{ ip_address.subnet }}</td>
+        <td>{{ ip_address.address }}</td>
+        <td>{{ ip_address.status }}</td>
+        <td>{{ ip_address.organization }}</td>
+        <td>{{ ip_address.organization_address }}</td>
+        <td>
+          {% if user.is_superuser %}
+            {% if subnet.has_free_ips %}
+              <form method="post" action="{% url 'create_ip_address' subnet.id %}">
+                {% csrf_token %}
+                <button type="submit">Добавить IP-адрес в эту подсеть</button>
+              </form>
+            {% endif %}
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

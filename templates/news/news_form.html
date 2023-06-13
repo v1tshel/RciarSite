@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Добавление новости
+{% endblock %}
+
+{% block heading %}
+    Добавление новости
+{% endblock %}
+{% load static %}
+{% block content %}
+<link href="{% static 'css/editnews.css' %}" rel="stylesheet">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="title">Заголовок</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ form.instance.title }}">
+          </div>
+        <div class="form-group">
+            <label for="content">Текст:</label>
+            <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Добавить</button>
+    </form>
+{% endblock %}

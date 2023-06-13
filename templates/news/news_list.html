@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Новости
+{% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+<link href="{% static 'css/stylenews.css' %}" rel="stylesheet">
+<h1>Актуальные Новости</h1>
+{% if user.is_superuser %}
+<a href="{% url 'news_create' %}" class="add-news">Добавить новость</a>
+{% endif %}
+
+<div class="news-container">
+  {% for news_item in news %}
+  <div class="news-block">
+    <h2>{{ news_item.title }}</h2>
+    <p>{{ news_item.content }}</p>
+    <p class="news-date">{{ news_item.date_published }}</p>
+    {% if user.is_superuser %}
+      <form method="post" action="{% url 'news_delete' pk=news_item.pk %}">
+        {% csrf_token %}
+        <button type="submit" onclick="return confirmDelete()">Удалить новость</button>
+      </form>
+      <a href="{% url 'news_edit' pk=news_item.pk %}" class="edit-link">Редактировать</a>
+    {% endif %}
+  </div>
+  {% empty %}
+    <p>На данный момент нет новостей.</p>
+  {% endfor %}
+</div>
+
+<script>
+  function confirmDelete() {
+    return confirm('Вы уверены, что хотите удалить новость?');
+  }
+</script>
+
+{% if user.is_authenticated %}
+{% if form.instance.pk %}
+{% if user.is_superuser %}
+<div class="news-block">
+<form method="post">
+{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Сохранить">
+</form>
+<a href="{% url 'news_edit' pk=news_item.pk %}" class="edit-link">Редактировать</a>
+</div>
+{% endif %}
+{% endif %}
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,7 @@
+<h3>Удаление новости</h3>
+<p>Вы уверены ,что хотите удалить новость ?</p>
+<form method="POST" action="{% url 'news_delete' news.id %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Да</button>
+  <a href="{% url 'news_list' %}" class="btn btn-secondary">Нет</a>
+</form>

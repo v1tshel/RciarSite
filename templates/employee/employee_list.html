@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+<link href="{% static 'css/employeelist.css' %}" rel="stylesheet">
+<h1>Сотрудники ОЦАИР</h1>
+{% if user.is_superuser %}
+<a class="btn" href="{% url 'employee_create' %}">Добавить сотрудника</a>
+{% endif %}
+<table>
+  <thead>
+    <tr>
+      <th>Имя</th>
+      <th>Фамилия</th>
+      <th>Дата рождения</th>
+      <th>Telegram</th>
+      <th>Команда</th>
+      <th>Проект</th>
+      {% if user.is_superuser %}
+      <th>Редактирование</th>
+      <th>Удаление</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for employee in employees %}
+    <tr>
+      <td>{{ employee.first_name }}</td>
+      <td>{{ employee.last_name }}</td>
+      <td>{{ employee.birth_date }}</td>
+      <td><a class="btn" href="https://t.me/{{ employee.telegram }}">{{ employee.telegram }}</a></td>
+      <td>{{ employee.team }}</td>
+      <td>{{ employee.project }}</td>
+      {% if user.is_superuser %}
+      <td><a class="btn" href="{% url 'employee_edit' employee.id %}">Редактировать</a></td>
+        <form method="post" action="{% url 'employee_delete' employee.id %}">
+          {% csrf_token %}
+          {% if user.is_superuser %}
+          <td><button class=btn type="submit" onclick="return confirmDelete()">Удалить</button></td>
+          {% endif %}
+        </form>
+      
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+  function confirmDelete() {
+    return confirm('Вы уверены, что хотите удалить сотрудника?');
+  }
+</script>
+{% endblock %}

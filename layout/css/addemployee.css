@@ -1,0 +1,100 @@
+/* addemployee.css */
+
+/* Стилизация заголовка */
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: rgb(195, 114, 1);
+}
+
+/* Стилизация формы */
+form {
+  max-width: 600px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 100px;
+  grid-row-gap: 20px;
+}
+
+.form-field {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: white;
+  margin-left: -160px; /* Автоматический отступ слева */
+  margin-right: 90px; /* Автоматический отступ справа */
+}
+
+input[type="text"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid rgb(195, 114, 1);
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-left: -160px; /* Автоматический отступ слева */
+  margin-right: 90px; /* Автоматический отступ справа */
+}
+
+
+input[type="text"],
+input[type="date"],
+input[type="email"],
+input[type="password"] {
+  width: 200px;
+  height: 40px; /* Фиксированная высота полей ввода */
+  font-size: 16px; /* Размер шрифта полей ввода */
+  margin-left: -160px; /* Автоматический отступ слева */
+  margin-right: 90px; /* Автоматический отступ справа */
+}
+
+button {
+  text-decoration: none;
+  background-color: #171717;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 20px;
+  cursor: pointer;
+  font-family: Arial;
+  position: relative; 
+  left: -50%;
+  transform: translate(-50%, 0);
+}
+
+button::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -3px;
+  left: 0;
+  background-color: rgb(195, 114, 1);
+  transition: width 0.3s ease-out; 
+}
+
+button:hover::after{
+  width: 100%; 
+}
+
+.error-message {
+  color: red;
+  margin-top: 5px;
+  font-size: 14px;
+  text-align: center;
+}
+
+input[type="checkbox"] {
+  margin-left: -160px; /* Автоматический отступ слева */
+  margin-right: 90px; /* Автоматический отступ справа */
+  display: block; /* Перенос на новую строку */
+}

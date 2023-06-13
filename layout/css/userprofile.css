@@ -1,0 +1,397 @@
+.personal-info {
+  position: absolute;
+  background-color: #171717;
+  color: white;
+  padding: 20px;
+  width: 300px;
+  border-radius: 20px;
+  top: 300px;
+  left: 25px ;
+  right: 0 auto;
+  margin: -20px auto 20px; /* Adjust the margin values as needed */
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out;
+  z-index: 1; /* Ensure the profile block appears above the task blocks */
+}
+
+
+.basic-info {
+  text-align: center;
+}
+
+.detailed-info {
+  display: none;
+}
+
+
+.detailed-info h3 {
+  margin-top: 0;
+}
+
+.detailed-info ul {
+  list-style: none;
+  padding: 0;
+}
+
+.detailed-info li {
+  display: flex;
+  align-items: center;
+}
+
+.detailed-info li strong {
+  margin-right: 3px;
+}
+
+.detailed-info li span {
+  margin-left: 3px;
+}
+
+.logout {
+  font-size: 18px;
+  font-family: Arial, sans-serif;
+  color: rgb(195, 114, 1);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: border-bottom 0.3s ease-in-out;
+  text-decoration: none;
+  line-height: 2;
+  position: relative;
+  float: right;
+}
+
+.logout:hover {
+  border-bottom: 2px solid rgb(255, 255, 255);
+}
+
+.logout-button {
+  display: block;
+  margin-top: 20px;
+  background-color: white;
+  color: #171717;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
+li {
+  font-size: 18px;
+  font-family: Arial, sans-serif;
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+  line-height: 2;
+}
+
+p {
+  font-size: 20px;
+  font-family: Arial, sans-serif;
+  color: rgb(134, 134, 134);
+  text-decoration: none;
+}
+
+a.detailed-info-link {
+  font-size: 20px;
+  font-family: Arial, sans-serif;
+  text-decoration: none;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: border-bottom 0.2s ease-in-out;
+  line-height: 2;
+}
+
+a.detailed-info-link:hover {
+  border-bottom: 2px solid rgb(255, 255, 255);
+}
+
+.avatar {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.task-container {
+  position: absolute;
+  top: 280px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-left: 400px; /* Отступ слева для смещения от левой панели */
+  margin-right: 400px; /* Отступ слева для смещения от левой панели */
+}
+
+.task-block {
+  flex-basis: calc(45% - 10px);
+  margin-bottom: 20px;
+  background-color: #171717;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease-in-out;
+  width: auto; /* Укажите желаемую ширину блока */
+  height: auto; /* Автоматическая высота для размещения контента */
+  word-wrap: break-word; /* Разрешение переноса слов */
+  position: relative; /* Добавлено для позиционирования кнопок */
+}
+
+.task-block:hover {
+  transform: translateY(-5px);
+}
+
+.task-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.task-text {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1 {
+  margin-top: 0px;
+  color: rgb(195, 114, 1);
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+a.task-create {
+  display: block;
+  width: 200px; 
+  margin: 0 auto;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  font-size: 22px;
+  color: white;
+  text-decoration: none;
+  position: relative;
+  padding: 5px 5px;
+  box-sizing: border-box;
+  
+}
+
+a.task-create::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0;
+  height: 3px;
+  background-color: white;
+  transition: width 0.3s ease-out;
+}
+
+a.task-create:hover::after,
+a.task-create:focus::after {
+  width: 100%;
+}
+
+
+h2 {
+  font-size: 30px;
+  line-height: 1.5;
+  color: #fff;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+h4 {
+  font-size: 20px;
+  line-height: 1.5;
+  color: #fff;
+  text-align: center;
+  font-family: Arial, sans-serif;
+
+  
+}
+
+
+a.edit-link {
+  display: inline-block;
+  position: relative;
+  padding: 5px 10px;
+  margin-top: 10px;
+  background-color: rgb(0, 0, 0);
+  color: rgb(195, 114, 1);
+  text-decoration: none;
+  border-radius: 15px;
+  border: none;
+  cursor: pointer;
+  bottom: 0;
+  left: 200px;
+  top: 10px;
+  font-size: 20px;
+  font-family: Arial, sans-serif;
+}
+
+
+a.edit-link::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background-color: #fff;
+  transition: width 0.3s ease-out;
+}
+
+a.edit-link:hover:after {
+  width: 100%;
+}
+
+h3 {
+  font-size: 30px;
+  line-height: 1.5;
+  color: #fff;
+  text-align: center;
+  font-family: Arial, sans-serif;
+
+  
+}
+
+.task-block p {
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 20px;
+}
+
+.notifications {
+  position: absolute;
+  background-color: #171717;
+  color: white;
+  padding: 20px;
+  border-radius: 20px;
+  width: 300px;
+  top: 300px;
+  left: auto;
+  right: 25px;
+  margin: -20px auto 20px; /* Adjust the margin values as needed */
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out;
+  z-index: 1; /* Ensure the profile block appears above the task blocks */
+}
+
+.notifications h5 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.notifications ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column-reverse; /* Отображение элементов списка в обратном порядке */
+}
+
+.notifications li {
+  font-size: 18px;
+  font-family: Arial, sans-serif;
+  color: rgb(255, 255, 255);
+  line-height: 1.5;
+}
+
+.notifications li:first-child {
+  margin-top: 0;
+}
+
+.notifications li:last-child {
+  margin-bottom: 0;
+}
+
+.notifications.empty li {
+  font-style: italic;
+  color: rgb(134, 134, 134);
+}
+
+button {
+  display: inline-block;
+  position: relative;
+  padding: 5px 10px;
+  margin-top: 10px;
+  background-color: rgb(0, 0, 0);
+  color: rgb(195, 114, 1);
+  text-decoration: none;
+  border-radius: 15px;
+  border: none;
+  cursor: pointer;
+  bottom: 0;
+  left: -85px;
+  top: 10px;
+  font-size: 20px;
+  font-family: Arial, sans-serif;
+}
+
+button:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background-color: #fff;
+  transition: width 0.3s ease-out;
+}
+
+button:hover:after {
+  width: 100%;
+}
+
+a.edit-task {
+  display: inline-block;
+  position: relative;
+  padding: 5px 10px;
+  margin-top: 10px;
+  background-color: rgb(0, 0, 0);
+  color: rgb(195, 114, 1);
+  text-decoration: none;
+  border-radius: 15px;
+  border: none;
+  cursor: pointer;
+  bottom: 0;
+  left: 5px;
+  top: 6px;
+  font-size: 20px;
+  font-family: Arial, sans-serif;
+}
+
+a.edit-task::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background-color: #fff;
+  transition: width 0.3s ease-out;
+}
+
+a.edit-task:hover:after {
+  width: 100%;
+}
+
+
+.task-block .buttons {
+  position: absolute;
+  bottom: 10px; /* Расположение кнопок снизу */
+  left: 50%; /* Выравнивание кнопок по центру */
+  transform: translateX(-50%); /* Сдвиг кнопок на половину их ширины */
+  display: flex;
+  justify-content: center;
+}
+
+.icon-pencil {
+  color: #ff0000; /* Цвет иконки */
+  font-size: 24px; /* Размер иконки */
+}

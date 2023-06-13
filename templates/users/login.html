@@ -1,0 +1,23 @@
+{%block title%}
+Авторизация
+{%endblock%}
+
+{% load static %}
+<!DOCTYPE html>
+<head>
+    <link href="{% static 'css/styleauth.css' %}" rel="stylesheet">
+    <title>Авторизация</title>
+</head>
+<body>
+    <form method="post">
+        <div class="form"></div>
+        <h3>Авторизация</h3>
+        {% csrf_token %}
+        {{ form.as_p }}
+             
+        <button>Войти</button>
+        <p><a href="{% url 'password_reset' %}">Забыли пароль?</a></p>
+    </form>
+    
+</body>
+</html>

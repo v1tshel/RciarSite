@@ -1,0 +1,54 @@
+h1 {
+    font-size: 2em;
+    margin-bottom: 0.5em;
+  }
+  
+  /* стили для таблицы */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  table th,
+  table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  table th {
+    background-color: #f2f2f2;
+  }
+  
+  /* стили для ссылки внутри ячейки таблицы */
+  a.ip-address {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  /* стили для пагинации */
+  ul.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin: 1em 0;
+    padding: 0;
+  }
+  
+  ul.pagination li {
+    margin: 0 0.25em;
+  }
+  
+  ul.pagination li a,
+  ul.pagination li span {
+    color: #007bff;
+    border: 1px solid #ddd;
+    padding: 0.5em;
+    text-decoration: none;
+  }
+  
+  ul.pagination li.active span,
+  ul.pagination li a:hover {
+    background-color: #007bff;
+    color: #fff;
+  }

@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<link href="{% static 'css/userprofile.css' %}" rel="stylesheet">
+
+
+<div class="task-container">
+  {% for task in tasks %}
+  <div class="task-block">
+    <h3>{{ task.title }}</h3>
+    <p>{{ task.text }}</p>
+    <p>Дата и время: {{ task.deadline }}</p>
+    <p>Выполнено ? <input type="checkbox" {% if task.completed %}checked{% endif %} onclick="markCompleted({{ task.id }}, this)"></p>
+    <p>Дата выполнения: {{ task.reminder_time }}</p>
+    <a href="{% url 'task_edit' task.id %}" class="edit-task">Редактировать</a>
+    <form id="delete-form-{{ task.id }}" method="POST" action="{% url 'task_delete' task.id %}">
+      {% csrf_token %}
+      <button type="submit" onclick="return confirmDelete()">Удалить</button>
+    </form>
+  </div>
+  {% empty %}
+  <p>У вас нет активных задач</p>
+  {% endfor %}
+</div>
+
+<script>
+  function confirmDelete() {
+    return confirm('Вы уверены, что хотите удалить задачу?');
+  }
+</script>
+
+
+<script>
+  function markCompleted(taskId, checkbox) {
+    // Отправить запрос на сервер для обновления статуса выполнения задачи
+    // Здесь вы можете использовать AJAX или другой метод отправки запросов
+    
+    // Пример использования Fetch API для отправки POST-запроса
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/task/${taskId}/complete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken // Используйте правильное имя CSRF-токена в вашем приложении
+      },
+      body: JSON.stringify({
+        completed: checkbox.checked
+      })
+    })
+    .then(response => {
+      // Обработка ответа
+    })
+    .catch(error => {
+      // Обработка ошибки
+    });
+  }
+</script>
+
+<h1>Ежедневник</h1>
+<a href="{% url 'task_create' %}"class="task-create">Добавить новую задачу</a>
+
+<div class="notifications">
+  <h5>Уведомления</h5>
+  <ul>
+    {% for notification in notifications %}
+      <li id="notification-{{ notification.id }}">
+        {{ notification.news.title }}
+        <input type="checkbox" {% if notification.news_read %}checked{% endif %} onclick="markNewsRead('{{ notification.id }}')">
+      </li>
+    {% empty %}
+      <li>Нет новых уведомлений</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<script>
+  function markNewsRead(notificationId) {
+    fetch(`/mark_news_read/${notificationId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify({ notification_id: notificationId })
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Удаление уведомления из блока после успешного обновления
+      const notificationElement = document.getElementById(`notification-${notificationId}`);
+      if (notificationElement) {
+        notificationElement.remove();
+      }
+    })
+    .catch(error => {
+      // Обработка ошибки, если необходимо
+    });
+  }
+</script>
+
+
+
+<div class="personal-info">
+    <div class="basic-info">
+      <div class="avatar-container">
+        <h4>Профиль сотрудника</h4>
+        <img src="{% if profile.photo %}{{ profile.photo.url }}{% else %}{% static 'media/default_avatar.png' %}{% endif %}" class="avatar" width="150" height="150">
+        <input type="file" id="avatar-input" name="avatar" style="display: none">
+        <label for="avatar-input" class="upload-icon"></label>
+      </div>
+      <h2><span id="user-fullname">{{ user.get_full_name }}</span></h2>
+      <p><span id="user-username">{{ user.username }}</span></p>
+    </div>
+    <div class="detailed-info" id="detailed-info">
+      <ul>
+        <li><strong>Телеграмм:</strong><br><span id="telegram">{{ profile.telegram }}</span></li>
+        <li><strong>Команда:</strong><br><span id="team">{{ profile.team }}</span></li>
+        <li><strong>Почта:</strong><br><span id="email">{{ profile.email }}</span> <i class="fas fa-pencil-alt icon-pencil"></i></li>
+        <li><strong>Проект:</strong><br><span id="project">{{ profile.project }}</span></li>
+      </ul>
+      <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="logout">Выход</a>
+      <form id="logout-form" method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+      </form>
+    </div>
+</div>
+    <div class="profile-info" style="display:none;">
+        <input type="text" name="telegram" id="id_telegram">
+        <input type="text" name="team" id="id_team">
+        <input type="text" name="email" id="id_email">
+        <input type="text" name="project" id="id_project">
+    </div>
+  </div>
+  <script>
+    var detailedInfo = document.getElementById("detailed-info");
+    var detailedInfoLink = document.createElement("a");
+    detailedInfoLink.innerText = "Подробная информация";
+    detailedInfoLink.classList.add("detailed-info-link"); 
+    detailedInfoLink.style.cursor = "pointer";
+
+    detailedInfoLink.addEventListener("click", function() {
+      if (detailedInfo.style.display === "block") {
+        detailedInfo.style.display = "none";
+      } else {
+        detailedInfo.style.display = "block";
+      }
+    });
+
+    
+
+    detailedInfo.parentNode.insertBefore(detailedInfoLink, detailedInfo);
+    detailedInfo.style.display = "none";
+    
+    var avatarInput = document.getElementById("avatar-input");
+    var avatarImg = document.querySelector(".avatar");
+    
+    avatarImg.addEventListener("click", function() {
+      avatarInput.click();
+    });
+    
+    avatarInput.addEventListener("change", function() {
+      var file = this.files[0];
+      var reader = new FileReader();
+      reader.onload = function() {
+        avatarImg.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+      var formData = new FormData();
+      formData.append('avatar', file);
+      fetch('/save_avatar/', {method: 'POST', body: formData, headers: {'X-CSRFToken': csrftoken}})
+        .then(response => console.log(response))
+        .catch(error => console.log(error));
+    });
+    
+    var userFullname = document.getElementById("user-fullname");
+    var userUsername = document.getElementById("user-username");
+    var userTelegram = document.getElementById("user-telegram");
+    var userTeam = document.getElementById("user-team");
+    var userEmail = document.getElementById("user-email");
+    var userProject = document.getElementById("user-project");
+    
+    userFullname.innerText = "{{ user.get_full_name }}";
+    userUsername.innerText = "{{ user.username }}";
+    userTelegram.innerText = "{{ telegram }}";
+    userTeam.innerText = "{{ team }}";
+    userEmail.innerText = "{{ email }}";
+    userProject.innerText = "{{ project }}";
+  </script>
+  {% endblock %}
+    
+  

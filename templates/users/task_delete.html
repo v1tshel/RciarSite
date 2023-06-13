@@ -1,0 +1,7 @@
+<h3>Удаление задачи</h3>
+<p>Вы уверены ,что хотите удалить эту задачу ?</p>
+<form method="POST" action="{% url 'task_delete' task.id %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Да</button>
+  <a href="{% url 'task_list' %}" class="btn btn-secondary">Нет</a>
+</form>
