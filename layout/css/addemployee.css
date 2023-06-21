@@ -20,6 +20,9 @@ form {
 
 .form-field {
   margin-bottom: 20px;
+  margin-left: -160px; /* Автоматический отступ слева */
+  margin-right: 90px; /* Автоматический отступ справа */
+  
 }
 
 label {
@@ -27,8 +30,6 @@ label {
   font-weight: bold;
   margin-bottom: 5px;
   color: white;
-  margin-left: -160px; /* Автоматический отступ слева */
-  margin-right: 90px; /* Автоматический отступ справа */
 }
 
 input[type="text"],
@@ -41,10 +42,7 @@ select {
   border: 1px solid rgb(195, 114, 1);
   border-radius: 4px;
   box-sizing: border-box;
-  margin-left: -160px; /* Автоматический отступ слева */
-  margin-right: 90px; /* Автоматический отступ справа */
 }
-
 
 input[type="text"],
 input[type="date"],
@@ -53,8 +51,6 @@ input[type="password"] {
   width: 200px;
   height: 40px; /* Фиксированная высота полей ввода */
   font-size: 16px; /* Размер шрифта полей ввода */
-  margin-left: -160px; /* Автоматический отступ слева */
-  margin-right: 90px; /* Автоматический отступ справа */
 }
 
 button {
@@ -66,7 +62,7 @@ button {
   font-size: 20px;
   cursor: pointer;
   font-family: Arial;
-  position: relative; 
+  position: relative;
   left: -50%;
   transform: translate(-50%, 0);
 }
@@ -79,11 +75,11 @@ button::after {
   bottom: -3px;
   left: 0;
   background-color: rgb(195, 114, 1);
-  transition: width 0.3s ease-out; 
+  transition: width 0.3s ease-out;
 }
 
-button:hover::after{
-  width: 100%; 
+button:hover::after {
+  width: 100%;
 }
 
 .error-message {
@@ -93,8 +89,34 @@ button:hover::after{
   text-align: center;
 }
 
+
+
 input[type="checkbox"] {
-  margin-left: -160px; /* Автоматический отступ слева */
-  margin-right: 90px; /* Автоматический отступ справа */
   display: block; /* Перенос на новую строку */
+}
+
+.alert {
+  padding: 10px;
+  margin-bottom: 20px;
+  color: #ea172c;
+  background-color: #171717;
+  border: 1px solid #171717;
+  border-radius: 4px;
+}
+
+.errorlist {
+  margin-top: 5px;
+  margin-bottom: 0;
+  padding-left: 15px;
+  color: #ea172c;
+  background-color: #171717;
+  border: 1px solid #171717;
+  border-radius: 4px;
+  list-style: none;
+  font-family: Arial, sans-serif;
+}
+
+.errorlist li {
+  margin-bottom: 5px;
+  text-align: center;
 }

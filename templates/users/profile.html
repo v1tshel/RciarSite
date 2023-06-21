@@ -25,32 +25,70 @@
   {% endfor %}
 </div>
 
+
 <script>
   function confirmDelete() {
     return confirm('Вы уверены, что хотите удалить задачу?');
   }
-</script>
-
-
-<script>
+  
+  function deleteTask(taskId) {
+    // Отправить запрос на сервер для удаления задачи
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/task/${taskId}/delete/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+      }
+    })
+    .then(response => {
+      // Обработка ответа
+      if (response.ok) {
+        // Задача успешно удалена
+        // Выполните необходимые действия, если требуется
+      } else {
+        // Обработка ошибки при удалении задачи
+      }
+    })
+    .catch(error => {
+      // Обработка ошибки
+    });
+  }
+  
   function markCompleted(taskId, checkbox) {
     // Отправить запрос на сервер для обновления статуса выполнения задачи
-    // Здесь вы можете использовать AJAX или другой метод отправки запросов
-    
-    // Пример использования Fetch API для отправки POST-запроса
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     fetch(`/task/${taskId}/complete`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRFToken': csrftoken // Используйте правильное имя CSRF-токена в вашем приложении
+        'X-CSRFToken': csrftoken
       },
       body: JSON.stringify({
-        completed: checkbox.checked
+        completed: checkbox.checked,
+        delete_task: checkbox.checked ? 'true' : 'false' // Установка значения поля delete_task
       })
     })
     .then(response => {
       // Обработка ответа
+      if (response.ok) {
+        // Задача успешно обновлена
+        if (checkbox.checked) {
+          // Галочка установлена
+          if (confirmDelete()) {
+            // Пользователь подтвердил удаление задачи
+            deleteTask(taskId);
+          } else {
+            // Пользователь отменил удаление задачи
+            // Выполните необходимые действия, если требуется
+          }
+        } else {
+          // Галочка снята
+          // Выполните необходимые действия, если требуется
+        }
+      } else {
+        // Обработка ошибки при обновлении задачи
+      }
     })
     .catch(error => {
       // Обработка ошибки
@@ -62,15 +100,32 @@
 <a href="{% url 'task_create' %}"class="task-create">Добавить новую задачу</a>
 
 <div class="notifications">
-  <h5>Уведомления</h5>
+  <h5>Уведомления:</h5>
+  <h6>Задачи:</h6>
   <ul>
     {% for notification in notifications %}
-      <li id="notification-{{ notification.id }}">
-        {{ notification.news.title }}
-        <input type="checkbox" {% if notification.news_read %}checked{% endif %} onclick="markNewsRead('{{ notification.id }}')">
-      </li>
+      {% if notification.task %}
+        <li id="notification-{{ notification.id }}">
+          {{ notification.task.title }}
+          <input type="checkbox" {% if notification.news_read %}checked{% endif %} onclick="markNewsRead('{{ notification.id }}')">
+        </li>
+      {% endif %}
     {% empty %}
-      <li>Нет новых уведомлений</li>
+      <li>Нет важных задач</li>
+    {% endfor %}
+  </ul>
+  
+  <h6>Новости:</h6>
+  <ul>
+    {% for notification in notifications %}
+      {% if not notification.task %}
+        <li id="notification-{{ notification.id }}">
+          {{ notification.news.title }}
+          <input type="checkbox" {% if notification.news_read %}checked{% endif %} onclick="markNewsRead('{{ notification.id }}')">
+        </li>
+      {% endif %}
+    {% empty %}
+      <li>Нет новых новостей</li>
     {% endfor %}
   </ul>
 </div>
@@ -116,7 +171,11 @@
       <ul>
         <li><strong>Телеграмм:</strong><br><span id="telegram">{{ profile.telegram }}</span></li>
         <li><strong>Команда:</strong><br><span id="team">{{ profile.team }}</span></li>
-        <li><strong>Почта:</strong><br><span id="email">{{ profile.email }}</span> <i class="fas fa-pencil-alt icon-pencil"></i></li>
+        <li>
+          <strong>Почта:</strong><br>
+          <span id="email">{{ profile.email }}</span>
+          <i class="fas fa-pencil-alt icon-pencil" id="edit-email"></i>
+        </li>
         <li><strong>Проект:</strong><br><span id="project">{{ profile.project }}</span></li>
       </ul>
       <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="logout">Выход</a>
@@ -152,8 +211,17 @@
     detailedInfo.parentNode.insertBefore(detailedInfoLink, detailedInfo);
     detailedInfo.style.display = "none";
     
+    var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     var avatarInput = document.getElementById("avatar-input");
     var avatarImg = document.querySelector(".avatar");
+    var localStorageKey = "selectedAvatar";
+    
+    
+    // Проверяем, есть ли сохраненный путь к фотографии в локальном хранилище
+    var selectedAvatar = localStorage.getItem(localStorageKey);
+    if (selectedAvatar) {
+      avatarImg.src = selectedAvatar;
+    }
     
     avatarImg.addEventListener("click", function() {
       avatarInput.click();
@@ -164,14 +232,26 @@
       var reader = new FileReader();
       reader.onload = function() {
         avatarImg.src = reader.result;
+        saveAvatar(file); // Сохранение аватара при загрузке файла
       };
       reader.readAsDataURL(file);
+    });
+    
+    function saveAvatar(file) {
       var formData = new FormData();
       formData.append('avatar', file);
-      fetch('/save_avatar/', {method: 'POST', body: formData, headers: {'X-CSRFToken': csrftoken}})
-        .then(response => console.log(response))
+    
+      fetch('/save_avatar/', { method: 'POST', body: formData, headers: { 'X-CSRFToken': csrftoken } })
+        .then(response => {
+          if (response.ok) {
+            // Сохраняем путь к выбранной фотографии в локальном хранилище
+            localStorage.setItem(localStorageKey, avatarImg.src);
+          } else {
+            // Обработка ошибки при сохранении фотографии
+          }
+        })
         .catch(error => console.log(error));
-    });
+    }
     
     var userFullname = document.getElementById("user-fullname");
     var userUsername = document.getElementById("user-username");
@@ -186,6 +266,73 @@
     userTeam.innerText = "{{ team }}";
     userEmail.innerText = "{{ email }}";
     userProject.innerText = "{{ project }}";
+
+
+    var emailField = document.getElementById("id_email");
+    var teamField = document.getElementById("id_team");
+    var telegramField = document.getElementById("id_telegram");
+    var projectField = document.getElementById("id_project");
+
+emailField.addEventListener("input", function() {
+  userEmail.innerText = emailField.value;
+});
+
+teamField.addEventListener("input", function() {
+  userTeam.innerText = teamField.value;
+});
+
+telegramField.addEventListener("input", function() {
+  userTelegram.innerText = telegramField.value;
+});
+
+projectField.addEventListener("input", function() {
+  userProject.innerText = projectField.value;
+});
+
+function saveProfile() {
+  var formData = new FormData();
+  formData.append('email', emailField.value);
+  formData.append('team', teamField.value);
+  formData.append('telegram', telegramField.value);
+  formData.append('project', projectField.value);
+
+  fetch('/save_profile/', {
+    method: 'POST',
+    body: formData,
+    headers: {'X-CSRFToken': csrftoken}
+  })
+  .then(response => {
+    if (response.ok) {
+      // Данные профиля успешно сохранены
+    } else {
+      // Обработка ошибки при сохранении данных профиля
+    }
+  })
+  .catch(error => {
+    // Обработка ошибки
+  });
+
+  var editEmailIcon = document.getElementById("edit-email");
+  var emailSpan = document.getElementById("email");
+  
+  editEmailIcon.addEventListener("click", function() {
+    emailSpan.contentEditable = true;
+    emailSpan.focus();
+  });
+  
+  emailSpan.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      emailSpan.contentEditable = false;
+      saveProfile();
+    }
+  });
+  
+  emailSpan.addEventListener("blur", function() {
+    emailSpan.contentEditable = false;
+    saveProfile();
+  });  
+}
   </script>
   {% endblock %}
     

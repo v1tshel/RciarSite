@@ -1,76 +1,118 @@
-.form-group {
-  margin-bottom: 20px;
-}
+  h1 {
+    color: rgb(195, 114, 1);
+    font-family: Arial;
+    text-align: center;
+  }
 
-content {
-  color: #fff;
-}
+  
+  button[type="submit"] {
+    background-color: rgb(195, 114, 1);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button[type="submit"][hidden] {
+    display: none;
+  }
 
-label {
-  display: block;
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: white;
-  font-family: Arial;
-  font-size: 20px;
-}
 
-input[type="text"],
-input[type="date"],
-textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-  font-family: Arial;
-  color: #000000;
-  font-size: 20px;
-}
+  .form-field {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-family: Arial, sans-serif;
+    color: white;
+    font-size: 20px;
+  }
+  
+  input[type="text"],
+  textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  button[type="submit"] {
+    text-decoration: none;
+    background-color: #171717;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 20px;
+    cursor: pointer;
+    font-family: Arial;
+    position: relative; 
+  }
+  
+  button [type="submit"] ::after {
+    content: '';
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    bottom: -3px;
+    left: 0;
+    background-color: rgb(195, 114, 1);
+    transition: width 0.3s ease-out; 
+  }
 
-button[type="submit"] {
-  background-color: #000000;
-  color: rgb(195, 114, 1);
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-}
+  button[type="submit"]:hover::after {
+    width: 100%; 
+  }
+  
+  button::after {
+    content: '';
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    bottom: -3px;
+    left: 0;
+    background-color: rgb(195, 114, 1);
+    transition: width 0.3s ease-out; 
+  }
 
-button[type="submit"]:hover {
-  background-color: #000000;
-}
+  .alert {
+    padding: 10px;
+    margin-bottom: 20px;
+    color: #ea172c;
+    background-color: #171717;
+    border: 1px solid #171717;
+    border-radius: 4px;
+  }
+  
+  .errorlist {
+    margin-top: 5px;
+    margin-bottom: 0;
+    padding-left: 15px;
+    color: #ea172c;
+    background-color: #171717;
+    border: 1px solid #171717;
+    border-radius: 4px;
+    list-style: none;
+    font-family: Arial, sans-serif;
+    text-align: center; /* Выравнивание по центру по ширине */
+    width: 300px; /* Задайте фиксированную ширину контейнера */
+    margin-left: auto; /* Центрирование контейнера по горизонтали */
+    margin-right: auto; /* Центрирование контейнера по горизонтали */
+  }
+  
+  .errorlist li {
+    margin-bottom: 5px;
+  }
+  
+  
+  
+  
 
-.btn-primary {
-  background-color: #ffffff;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-}
 
-.btn-primary:hover {
-  background-color: #ffffff;
-}
 
-h1 {
-  color: rgb(195, 114, 1);
-  font-family: Arial;
-  font-size: 35px;
-  text-align: center;
-}
 
-input[type="text"],
-input[type="date"],
-textarea {
-  color: rgb(0, 0, 0);
-  font-family: Arial;
-  font-size: 20px;
-  background-color: #ffffff;
-  border: none;
-  border-radius: 0;
-}
+
+

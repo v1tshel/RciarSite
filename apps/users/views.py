@@ -5,20 +5,20 @@ from django.views.generic import CreateView
 from django.views import View
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import authenticate, login, logout
-from apps.users.forms import CustomUserCreationForm, ProfileForm, TaskForm, Task, NewsForm, CustomUserChangeForm, SubnetForm
-from apps.users.models import Notification, Profile, News, CustomUser
+from apps.users.forms import CustomUserCreationForm, ProfileForm, TaskForm, Task, NewsForm, CustomUserChangeForm, SubnetForm, OrganizationForm, OrganizationAddressForm
+from apps.users.models import Notification, Profile, News, CustomUser, OrganizationAddress
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.forms import ValidationError
 from django.utils import timezone
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.decorators import method_decorator
 from .models import Subnet, IPAddress, Organization
 from .forms import IPAddressForm
 from django.db.models import Q
-
+from django.forms import formset_factory
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.sites.shortcuts import get_current_site
@@ -37,12 +37,10 @@ class PasswordResetView(auth_views.PasswordResetView):
     email_template_name = 'password/password_reset.html'
     success_url = reverse_lazy('password_reset_done')
 
-# Представление для подтверждения сброса пароля
 class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     template_name = 'password/password_reset_confirm.html'
     success_url = reverse_lazy('password_reset_complete')
 
-# Представление для успешного завершения сброса пароля
 class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     template_name = 'password/password_reset_complete.html'
 
@@ -166,20 +164,45 @@ class LoginView(LoginView):
 def complete_task(request, task_id):
     if request.method == 'POST':
         task = Task.objects.get(id=task_id)
-        task.completed = True
+        completed = not task.completed
+        task.completed = completed
         task.save()
-        return JsonResponse({'message': 'Task completed successfully'})
+        
+        if completed and request.POST.get('delete_task') == 'true':
+            task.delete()
+            return JsonResponse({'message': 'Task deleted successfully'})
+        
+        return JsonResponse({'message': 'Task status updated successfully'})
+    
+class TaskDeleteView(View):
+    def post(self, request, task_id):
+        task = Task.objects.get(id=task_id)
+        task.delete()
+        return redirect('profile')
+
+
 
 class TaskCreateView(View):
     def get(self, request):
         form = TaskForm()
         return render(request, 'users/task_create.html', {'form': form})
+    
     def post(self, request):
         form = TaskForm(request.POST)
-        if form.is_valid():
+        if form.is_valid(): 
             task = form.save(commit=False)
             task.user = request.user
             task.save()
+            
+            news = None  # Укажите новость, связанную с задачей, если есть
+            
+            notification = Notification.objects.create(
+                user=request.user,
+                task=task,
+                task_reminder_time=task.reminder_time,
+                news=news
+            )
+            
             return redirect('profile')
         else:
             messages.error(request, 'Заполните необходимые поля.')
@@ -191,7 +214,7 @@ class TaskDetailView(View):
         task = get_object_or_404(Task, id=task_id)
         form = TaskForm(instance=task)
         return render(request, 'users/task_edit.html', {'task': task, 'form': form})
-    
+
     def post(self, request, task_id):
         task = get_object_or_404(Task, id=task_id)
         form = TaskForm(request.POST, instance=task)
@@ -199,7 +222,9 @@ class TaskDetailView(View):
             # Проверка на изменение полей
             if form.has_changed():
                 # Проверка на пустые поля
-                if form.cleaned_data['title'] and form.cleaned_data['text']:
+                title = form.cleaned_data['title']
+                text = form.cleaned_data['text']
+                if title and text:
                     # Проверка даты дедлайна
                     deadline = form.cleaned_data['deadline']
                     if deadline < timezone.now():
@@ -213,7 +238,7 @@ class TaskDetailView(View):
                             form.save()
                             return redirect('task_edit', task_id=task_id)
                 else:
-                    form.add_error(None, "Поля не могут быть пустыми.")
+                    form.add_error(None, "Поля 'Заголовок' и 'Текст' не могут быть пустыми.")
             else:
                 form.add_error(None, "Нет изменений в задаче.")
         return render(request, 'users/task_edit.html', {'task': task, 'form': form})
@@ -222,11 +247,6 @@ class TaskDetailView(View):
 
 
 
-class TaskDeleteView(View):
-    def post(self, request, task_id):
-        task = Task.objects.get(id=task_id)
-        task.delete()
-        return redirect('profile')
     
 
 
@@ -239,25 +259,30 @@ def news(request):
 #News_Create
 @login_required
 def news_create(request):
-    form = NewsForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        news = form.save(commit=False)
-        news.author = request.user
-        news.save()
-        return redirect('news')
+    if request.method == 'POST':
+        form = NewsForm(request.POST)
+        if form.is_valid():
+            news = form.save(commit=False)
+            news.author = request.user
+            news.save()
+            return redirect('news_create')
+        else:
+            messages.error(request, 'Произошла ошибка при сохранении организации.')
+    else:
+        form = NewsForm()        
     return render(request, 'news/news_form.html', {'form': form})
+
 
 #News_Edit
 @login_required
 def news_edit(request, pk):
     news_item = get_object_or_404(News, pk=pk)
-    
     if request.method == 'POST':
         form = NewsForm(request.POST, instance=news_item)
         if form.is_valid():
             if form.has_changed():
                 form.save()
-                messages.success(request, 'Новость успешно сохранена.')
+                return redirect('news')
             else:
                 messages.error(request, 'Текст новости не был изменен.')
         else:
@@ -267,6 +292,8 @@ def news_edit(request, pk):
     
     context = {'form': form}
     return render(request, 'news/news_edit.html', context)
+
+
 
 #News_Delete
 @login_required
@@ -346,10 +373,28 @@ def subnet_list(request):
         subnets = subnets.filter(Q(name__icontains=search_query) | Q(network_address__icontains=search_query))
 
     return render(request, 'subnet/subnet_list.html', {'subnets': subnets})
+
 @login_required
-def subnet_detail(request, subnet_id):
-    subnet = Subnet.objects.get(id=subnet_id)
-    return render(request, 'subnet/subnet_detail.html', {'subnet': subnet})
+def subnet_detail(request, pk):
+    subnet = get_object_or_404(Subnet, pk=pk)
+    if request.method == 'POST':
+        form = SubnetForm(request.POST, instance=subnet)
+        if form.has_changed():
+            if form.is_valid():
+                form.save()
+                return redirect('subnet_list')
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, f' {error}')
+        else:
+             messages.error(request, 'Вы не внесли изменений.')
+                
+    else:
+        form = SubnetForm(instance=subnet)
+    return render(request, 'subnet/subnet_detail.html', {'subnet': subnet, 'form': form})
+
+
 
 @login_required
 def subnet_create(request):
@@ -393,30 +438,132 @@ def ip_address_list(request, subnet_id):
     }
     return render(request, 'ipaddress/ip_address_list.html', context)
 
+
 @login_required
-def ip_address_detail(request, ip_address_id):
-    ip_address = IPAddress.objects.get(id=ip_address_id)
-    return render(request, 'ipaddress/ip_address_detail.html', {'ip_address': ip_address})
+def ip_address_detail(request, pk):
+    ip_address = get_object_or_404(IPAddress, pk=pk)
+    if request.method == 'POST':
+        form = IPAddressForm(request.POST, instance=ip_address)
+        if form.is_valid():
+            form.save()
+            return redirect('ip_address_list', subnet_id=ip_address.subnet_id)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f' {error}')
+    else:
+        form = IPAddressForm(instance=ip_address)
+    return render(request, 'ipaddress/ip_address_detail.html', {'ip_address': ip_address, 'form': form})
+
 
 @login_required
 def ip_address_create(request):
+    subnet_id = None  # Инициализируем subnet_id значением по умолчанию
     if request.method == 'POST':
         form = IPAddressForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('ip_address_list')
+            ip_address = form.save(commit=False)
+            subnet_id = ip_address.subnet.id  # Получаем subnet_id из сохраненного IP-адреса
+            ip_address.save()
+            return redirect('ip_address_list', subnet_id=subnet_id)
     else:
         form = IPAddressForm()
     return render(request, 'ipaddress/ip_address_create.html', {'form': form})
 
 @login_required
-def organization_list(request):
-    organizations = Organization.objects.all()
-    return render(request, 'organization/organization_list.html', {'organizations': organizations})
+def ip_address_delete(request, ip_address_id):
+    ip_address = get_object_or_404(IPAddress, id=ip_address_id)
+    if request.method == 'POST':
+        ip_address.delete()
+        return redirect('ip_address_list')
+    return render(request, 'ipaddress/ip_address_delete.html', {'ip_address': ip_address})
 
 @login_required
-def organization_detail(request, organization_id):
-    organization = Organization.objects.get(id=organization_id)
-    return render(request, 'organization/organization_detail.html', {'organization': organization})
+def organization_create(request):
+    if request.method == 'POST':
+        form = OrganizationForm(request.POST)
+        if form.is_valid():
+            organization = form.save(commit=False)
+            organization.save()
+            return redirect('address_create', organization_id=organization.id)
+    else:
+        form = OrganizationForm()
+    return render(request, 'organization/organization_create.html', {'form': form})
+
+@login_required
+def address_create(request, organization_id):
+    organization = get_object_or_404(Organization, id=organization_id)
+    if request.method == 'POST':
+        form = OrganizationAddressForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.organization = organization
+            address.save()
+            return redirect('organization_list')
+        else:
+            messages.error(request, '')
+    else:
+        form = OrganizationAddressForm()
+    return render(request, 'organization/address_create.html', {'form': form, 'organization': organization})
+
+@login_required
+def organization_edit(request, pk):
+    organization = get_object_or_404(Organization, pk=pk)
+    if request.method == 'POST':
+        form = OrganizationForm(request.POST, instance=organization)
+        if form.has_changed():
+            if form.is_valid():
+                form.save()
+                return redirect('organization_list')
+            else:
+                messages.error(request, 'Произошла ошибка при сохранении организации.')
+        else:
+            messages.error(request, 'Вы не внесли изменений в организацию.')
+    else:
+        form = OrganizationForm(instance=organization)
+    return render(request, 'organization/organization_edit.html', {'form': form, 'organization': organization})
+
+def organization_list(request):
+    organizations = Organization.objects.all()
+    search_query = request.GET.get('search')
+
+    if search_query:
+        organizations = organizations.filter(Q(name__icontains=search_query))
+    return render(request, 'organization/organization_list.html', {'organizations': organizations})
+
+
+
+@login_required
+def organization_delete(request, pk):
+    organization = get_object_or_404(Organization, pk=pk)
+    if request.method == 'POST':
+        organization.delete()
+        return redirect('organization_list')
+    return render(request, 'organization/organization_delete.html', {'organization': organization})
+
+
+class SaveProfileView(View):
+    def post(self, request):
+        
+        # Получение текущего пользователя
+        user = request.user
+
+        # Сохранение обновленных данных профиля в базе данных
+        profile = Profile.objects.get(user=user)
+        profile.save()
+
+        
+        # Загрузка фотографии профиля
+        if 'avatar' in request.FILES:
+            avatar = request.FILES['avatar']
+            profile.photo = avatar
+            profile.save()
+        
+        # Возврат JSON-ответа с обновленными данными профиля
+        response_data = {
+            'message': 'Profile saved successfully',
+            'photo': profile.photo.url if profile.photo else None
+        }
+        return JsonResponse(response_data)
 
 

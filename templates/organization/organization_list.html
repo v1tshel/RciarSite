@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+<link href="{% static 'css/subnetlist.css' %}" rel="stylesheet">
+  <h1>Список организаций</h1>
+  <form class="search-form" method="GET" action="{% url 'organization_list' %}">
+    <input class="search-input" type="text" name="search" placeholder="Поиск">
+    <button class="search-button" type="submit">Найти</button>
+  </form>
+  <a class="btn" href="{% url 'organization_create' %}">Добавить организацию</a>
+  <table>
+    <thead>
+      <tr>
+        <th>Название организации</th>
+        <th>Город</th>
+        <th>Улица</th>
+        <th>Номер дома</th>
+        <th>Редактирование</th>
+        <th>Удаление</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for organization in organizations %}
+      <tr>
+        <td>{{ organization.name }}</td>
+        {% if organization.organization_addresses.exists %}
+        <td>{{ organization.organization_addresses.first.city }}</td>
+        <td>{{ organization.organization_addresses.first.street }}</td>
+        <td>{{ organization.organization_addresses.first.numberhouse }}</td>
+        {% else %}
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        {% endif %}
+        {% if user.is_superuser %}
+        <td><a class="btn" href="{% url 'organization_edit' organization.id %}">Редактировать</a></td>
+        <form method="post" action="{% url 'organization_delete' organization.id %}">
+            {% csrf_token %}
+          <td><button class="btn" type="submit" onclick="return confirmDelete()">Удалить</button></td>
+        </form>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <script>
+    function confirmDelete() {
+      return confirm('Вы уверены, что хотите удалить организацию?');
+    }
+  </script>
+{% endblock %}

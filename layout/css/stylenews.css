@@ -57,6 +57,7 @@ h1 {
   font-family: Arial, sans-serif;
 }
 
+
 p {
   margin-top: 0;
   color: white;
@@ -164,9 +165,9 @@ a.edit-link:hover:after {
 }
 
 h2 {
+  color: rgb(195, 114, 1);
   font-size: 40px;
   line-height: 1.5;
-  color: #fff;
   text-align: center;
   font-family: Arial, sans-serif;
 }
@@ -187,3 +188,28 @@ h2 {
 }
 
 
+.alert {
+    padding: 10px;
+    margin-bottom: 20px;
+    color: #ea172c;
+    background-color: #171717;
+    border: 1px solid #171717;
+    border-radius: 4px;
+  }
+  
+  .errorlist {
+    margin-top: 5px;
+    margin-bottom: 0;
+    padding-left: 15px;
+    color: #ea172c;
+    background-color: #171717;
+    border: 1px solid #171717;
+    border-radius: 4px;
+    list-style: none;
+    font-family: Arial, sans-serif;
+  }
+  
+  .errorlist li {
+    margin-bottom: 5px;
+    text-align: center;
+  }

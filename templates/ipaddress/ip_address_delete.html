@@ -1,0 +1,7 @@
+<h3>Удаление подсети</h3>
+<p>Вы уверены ,что хотите удалить ip-адрес ?</p>
+<form method="POST" action="{% url 'ip_address_delete' ip_address.id %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Да</button>
+  <a href="{% url 'ip_address_list' %}" class="btn btn-secondary">Нет</a>
+</form>

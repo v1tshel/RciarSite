@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<link href="{% static 'css/subnetlist.css' %}" rel="stylesheet">
+<h1>Ввод адреса организации</h1>
+<form method="post" action="{% url 'address_create' organization_id=organization.id %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Сохранить</button>
+</form>
+{% endblock %}

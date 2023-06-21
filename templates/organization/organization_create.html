@@ -1,26 +1,23 @@
 {% extends 'base.html' %}
-
 {% block content %}
 {% load static %}
-  <link href="{% static 'css/addemployee.css' %}" rel="stylesheet">
-<h1>Изменение данных сотрудника</h1>
-<form method="POST">
-  {% csrf_token %}
-  {% for field in form %}
+<link href="{% static 'css/subnetlist.css' %}" rel="stylesheet">
+  <h1>Добавление организации</h1>
+  <form method="POST">
+    {% csrf_token %}
+    {% for field in form %}
     <div class="form-field {% if field.errors %}error{% endif %}">
       <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
       {% if field.errors %}
-        {{ field }}
         <ul class="errorlist">
           {% for error in field.errors %}
             <li>{{ error }}</li>
           {% endfor %}
         </ul>
-      {% else %}
-        {{ field }}
       {% endif %}
     </div>
   {% endfor %}
-  <button type="submit">Сохранить</button>
-</form>
+    <button type="submit">Добавить</button>
+  </form>
 {% endblock %}

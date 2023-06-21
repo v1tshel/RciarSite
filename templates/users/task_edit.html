@@ -20,7 +20,7 @@
       {% endif %}
     </div>
     <div class="form-group">
-      <label for="deadline">Deadline</label>
+      <label for="deadline">Дата выполнения</label>
       <input type="datetime-local" class="form-control {% if form.errors.deadline %}is-invalid{% endif %}" id="deadline" name="deadline" value="{{ task.deadline|date:'Y-m-d\TH:i' }}" min="{{ current_date }}">
       {% if form.errors.deadline %}
         <div class="invalid-feedback">{{ form.errors.deadline }}</div>

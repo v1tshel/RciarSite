@@ -283,6 +283,14 @@ h3 {
 }
 
 .notifications h5 {
+  color: rgb(195, 114, 1);
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.notifications h6 {
+  color: rgb(195, 114, 1);
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
@@ -394,4 +402,14 @@ a.edit-task:hover:after {
 .icon-pencil {
   color: #ff0000; /* Цвет иконки */
   font-size: 24px; /* Размер иконки */
+}
+
+.icon-pencil {
+  display: none; /* Скрыть икону по умолчанию */
+  cursor: pointer;
+}
+
+li:hover .icon-pencil {
+  display: inline-block; /* Показать икону при наведении на элемент списка */
+  margin-left: 5px; /* Небольшой отступ от текста */
 }
